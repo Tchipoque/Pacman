@@ -6,27 +6,27 @@ class Vector2(object):
         self.y = y
         self.thresh = 0.000001
 
-    def __add__(self, other: Vector2):
+    def __add__(self, other):
         return Vector2(self.x + other.x, self.y + other.y )
-    
-    def __sub__(self, other: Vector2):
+
+    def __sub__(self, other):
         return Vector2(self.x - other.x, self.y - other.y )
-    
+
     def __neg__(self):
         return Vector2(-self.x, -self.y )
-    
+
     def __mul__(self, scalar: int):
         return Vector2(self.x * scalar, self.y * scalar )
-    
+
     def __div__(self, scalar: int):
         if scalar != 0:
             return Vector2(self.x / float(scalar), self.y / float(scalar) )
         return None
-    
+
     def __truediv__(self, scalar: int):
         return self.__div__(scalar)
 
-    def __eq__(self, other: Vector2):
+    def __eq__(self, other):
         if abs(self.x - other.x) < self.thresh:
             if abs(self.y - other.y) < self.thresh:
                 return True
@@ -43,7 +43,7 @@ class Vector2(object):
 
     def asTuple(self):
         return self.x , self.y
-    
+
     def asInt(self):
         return int(self.x) , int(self.y)
 
