@@ -1,6 +1,7 @@
 import pygame
 from vector import Vector2
 from constants import constants
+import numpy as np
 
 
 class Node():
@@ -18,35 +19,79 @@ class Node():
 
 
 class NodeGroup():
-	def __init__(self):
-		self.nodeList = []
+	def __init__(self, level):
+		self.level = level
+		self.nodesLUT = {}
+		self.nodeSymbols = ['+']
+		self.pathSymbols = ['.']
+		data = self.readMazeFile(level)
+		self.createNodeTable(data)
+		self.connectHorizontally(data)
+		self.connectVertically(data)
 
-	def setupTestNodes(self):
-		nodeA = Node(80 ,80)
-		nodeB = Node(160, 80)
-		nodeC = Node(80, 160)
-		nodeD = Node(160, 160)
-		nodeE = Node(208, 160)
-		nodeF = Node(80, 320)
-		nodeG = Node(208, 320)
-		nodeA.neighbors[constants.RIGHT.value] = nodeB
-		nodeA.neighbors[constants.DOWN.value] = nodeC
-		nodeB.neighbors[constants.LEFT.value] = nodeA
-		nodeB.neighbors[constants.DOWN.value] = nodeD
-		nodeC.neighbors[constants.UP.value] = nodeA
-		nodeC.neighbors[constants.RIGHT.value] = nodeD
-		nodeC.neighbors[constants.DOWN.value] = nodeF
-		nodeD.neighbors[constants.UP.value] = nodeB
-		nodeD.neighbors[constants.LEFT.value] = nodeC
-		nodeD.neighbors[constants.RIGHT.value] = nodeE
-		nodeE.neighbors[constants.LEFT.value] = nodeD
-		nodeE.neighbors[constants.DOWN.value] = nodeG
-		nodeF.neighbors[constants.UP.value] = nodeC
-		nodeF.neighbors[constants.RIGHT.value] = nodeG
-		nodeG.neighbors[constants.UP.value] = nodeE
-		nodeG.neighbors[constants.LEFT.value] = nodeF
-		self.nodeList = [nodeA, nodeB, nodeC, nodeD, nodeE, nodeF, nodeG]
 
 	def render(self, screen):
-		for node in self.nodeList:
+		for node in self.nodesLUT.values():
 			node.render(screen)
+
+	def readMazeFile(self, textfile):
+		return np.loadtxt(textfile, dtype='<U1')
+
+	def createNodeTable(self, data, xoffset = 0, yoffset = 0):
+		for row in list(range(data.shape[0])):
+			for col in list(range(data.shape[1])):
+				if data[row][col] in self.nodeSymbols:
+					x, y = self.constructKey(col+xoffset, row+yoffset)
+					self.nodesLUT[(x, y)] = Node(x, y)
+
+	def constructKey(self, x, y):
+		return x * constants.TILEWIDTH.value, y * constants.TILEHEIGHT.value
+
+
+	def connectHorizontally(self, data, xoffset= 0, yoffset=0):
+		for row in list(range(data.shape[0])):
+			key = None
+			for col in list(range(data.shape[1])):
+				if data[row][col] in self.nodeSymbols:
+					if key is None:
+						key = self.constructKey(col+xoffset, row+yoffset)
+					else:
+						otherkey = self.constructKey(col+xoffset, row+yoffset)
+						self.nodesLUT[key].neighbors[constants.RIGHT.value] = self.nodesLUT[otherkey]
+						self.nodesLUT[otherkey].neighbors[constants.LEFT.value] = self.nodesLUT[key]
+						key = otherkey
+				elif data[row][col] not in self.pathSymbols:
+					key = None
+
+	def connectVertically(self, data, xoffset=0, yoffset=0):
+		dataT = data.transpose()
+		for col in list(range(dataT.shape[0])):
+			key = None
+			for row in list(range(dataT.shape[0])):
+				if dataT[col][row] in self.nodeSymbols:
+					if key is None:
+						key = self.constructKey(col+xoffset, row+yoffset)
+					else:
+						otherkey = self.constructKey(col+xoffset, row+yoffset)
+						self.nodesLUT[key].neighbors[constants.DOWN.value] = self.nodesLUT[otherkey]
+						self.nodesLUT[otherkey].neighbors[constants.UP.value] = self.nodesLUT[key]
+						key = otherkey
+				elif dataT[col][row] not in self.pathSymbols:
+					key = None
+
+	def getNodeFromPixels(self, xpixel, ypixel):
+		if (xpixel, ypixel) in self.nodesLUT.keys():
+			return self.nodesLUT[(xpixel, ypixel)]
+		return None
+
+	def getNodeFromTiles(self, col, row):
+		x, y = self.constructKey(col, row)
+		if (x, y) in self.nodesLUT.keys():
+			return self.nodesLUT[(x, y)]
+		return None
+
+	def getStartTempNode(self):
+		nodes = list(self.nodesLUT.values())
+		return nodes[0]
+
+
