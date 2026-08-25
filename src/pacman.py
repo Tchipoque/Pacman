@@ -1,19 +1,19 @@
 import pygame
 from pygame.locals import *
 from vector import Vector2
-from constants import constants
+from constants import *
 
 
 class Pacman():
 	def __init__(self, node):
-		self.name = constants.PACMAN.value
-		self.directions = {constants.STOP.value: Vector2(), constants.UP.value : Vector2(0, -1),
-					  constants.DOWN.value: Vector2(0, 1), constants.LEFT.value: Vector2(-1, 0),
-					   constants.RIGHT.value: Vector2(1, 0)}
-		self.direction = constants.STOP.value
-		self.speed = 100 * constants.TILEWIDTH.value/16
+		self.name = PACMAN
+		self.directions = {STOP: Vector2(), UP : Vector2(0, -1),
+					  DOWN: Vector2(0, 1), LEFT: Vector2(-1, 0),
+					   RIGHT: Vector2(1, 0)}
+		self.direction = STOP
+		self.speed = 100 * TILEWIDTH/16
 		self.radius = 10
-		self.color = constants.YELLOW.value
+		self.color = YELLOW
 		self.node = node
 		self.setPosition()
 		self.target = node
@@ -26,6 +26,8 @@ class Pacman():
 		direction = self.getValidKey()
 		if self.overshotTarget():
 			self.node = self.target
+			if self.node.neighbors[PORTAL] is not None:
+				self.node = self.node.neighbors[PORTAL]
 			self.target = self.getNewTarget(direction)
 			if self.target is not self.node:
 				self.direction = direction
@@ -33,14 +35,14 @@ class Pacman():
 				self.target = self.getNewTarget(self.direction)
 
 			if self.target is self.node:
-				self.direction = constants.STOP.value
+				self.direction = STOP
 			self.setPosition()
 		else:
 			if self.oppositeDirection(direction):
 				self.reverseDriection()
 
 	def validDirection(self, direction):
-		if direction is not constants.STOP.value:
+		if direction is not STOP:
 			if self.node.neighbors[direction] is not None:
 				return True
 		return False
@@ -53,14 +55,14 @@ class Pacman():
 	def getValidKey(self):
 		key_pressed = pygame.key.get_pressed()
 		if key_pressed[K_UP]:
-			return constants.UP.value
+			return UP
 		if key_pressed[K_DOWN]:
-			return constants.DOWN.value
+			return DOWN
 		if key_pressed[K_LEFT]:
-			return constants.LEFT.value
+			return LEFT
 		if key_pressed[K_RIGHT]:
-			return constants.RIGHT.value
-		return constants.STOP.value
+			return RIGHT
+		return STOP
 
 	def render(self, screen):
 		p = self.position.asInt()
@@ -82,7 +84,7 @@ class Pacman():
 		self.target = temp
 
 	def oppositeDirection(self, direction):
-		if direction is not constants.STOP.value:
+		if direction is not STOP:
 			if direction == self.direction * -1:
 				return True
 		return False
