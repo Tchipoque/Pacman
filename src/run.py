@@ -28,6 +28,7 @@ class GameController(object):
 		dt = self.clock.tick(30) / 1000.0
 		self.pacman.update(dt)
 		self.pellets.update(dt)
+		self.checkPelletEvents()
 		self.checkEvents()
 		self.render()
 
@@ -42,6 +43,12 @@ class GameController(object):
 		self.pellets.render(self.screen)
 		self.pacman.render(self.screen)
 		pygame.display.update()
+
+	def checkPelletEvents(self):
+		pellet = self.pacman.eatPellets(self.pellets.pelletList)
+		if pellet:
+			self.pellets.numEaten += 1
+			self.pellets.pelletList.remove(pellet)
 
 
 if __name__ == "__main__":
