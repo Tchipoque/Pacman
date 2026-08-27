@@ -41,7 +41,7 @@ class Pacman(Entity):
 			self.setPosition()
 		else:
 			if self.oppositeDirection(direction):
-				self.reverseDriection()
+				self.reverseDirection()
 
 	def eatPellets(self, pelletList):
 		for pellet in pelletList :
