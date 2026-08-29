@@ -68,7 +68,7 @@ class NodeGroup():
 		dataT = data.transpose()
 		for col in list(range(dataT.shape[0])):
 			key = None
-			for row in list(range(dataT.shape[0])):
+			for row in list(range(dataT.shape[1])):
 				if dataT[col][row] in self.nodeSymbols:
 					if key is None:
 						key = self.constructKey(col+xoffset, row+yoffset)
