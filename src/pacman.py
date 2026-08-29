@@ -45,9 +45,17 @@ class Pacman(Entity):
 
 	def eatPellets(self, pelletList):
 		for pellet in pelletList :
-			d = self.position - pellet.position
-			dSquared = d.magnitudeSquared()
-			rSquared = (pellet.radius + self.collideRadius) ** 2
-			if dSquared <= rSquared:
+			if self.collideCheck(pellet):
 				return pellet
 		return None
+
+	def collideGhost(self, ghost):
+		return self.collideCheck(ghost)
+
+	def collideCheck(self, other):
+		d = self.position - other.position
+		dSquared = d.magnitudeSquared()
+		rSquared = (self.collideRadius + other.collideRadius) ** 2
+		if dSquared <= rSquared:
+			return True
+		return False
