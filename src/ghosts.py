@@ -63,6 +63,7 @@ class Blinky(Ghost):
 
 class Pinky(Ghost):
 	def __init__(self, node, pacman= None, blinky=None):
+		super().__init__(node, pacman, blinky)
 		self.name = PINKY
 		self.color = PINK
 
@@ -83,7 +84,7 @@ class Inky(Ghost):
 		self.goal = Vector2(TILEWIDTH*NCOLS, TILEHEIGHT*NROWS)
 
 	def chase(self):
-		vec1 = self.pacman.postion +self.pacman.directions[self.pacman.direction] * TILEWIDTH * 2
+		vec1 = self.pacman.position +self.pacman.directions[self.pacman.direction] * TILEWIDTH * 2
 		vec2 = (vec1 - self.blinky.position) * 2
 		self.goal = self.blinky.position + vec2
 
