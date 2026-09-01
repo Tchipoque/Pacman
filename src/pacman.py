@@ -12,6 +12,17 @@ class Pacman(Entity):
 		self.color = YELLOW
 		self.direction = LEFT
 		self.setBetweenNodes(LEFT)
+		self.alive = True
+
+	def reset(self):
+		Entity.reset(self)
+		self.direction = LEFT
+		self.setBetweenNodes(LEFT)
+		self.alive = True
+
+	def die(self):
+		self.alive = False
+		self.direction = STOP
 
 	def getValidKey(self):
 		key_pressed = pygame.key.get_pressed()

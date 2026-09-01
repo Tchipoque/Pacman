@@ -31,6 +31,11 @@ class Ghost(Entity):
 	def chase(self):
 		self.goal = self.pacman.position
 
+	def reset(self):
+		Entity.reset(self)
+		self.points = 200
+		self.directionMethod = self.goalDirection
+
 	def startFreight(self):
 		self.mode.setFreightMode()
 		if self.mode.current == FREIGHT:
@@ -40,6 +45,7 @@ class Ghost(Entity):
 	def normalMode(self):
 		self.setSpeed(100)
 		self.directionMethod = self.goalDirection
+		self.homeNode.denyAccess(DOWN, self)
 
 	def spawn(self):
 		self.goal = self.spawnNode.position
