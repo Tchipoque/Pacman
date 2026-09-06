@@ -3,20 +3,22 @@ from vector import Vector2
 from constants import *
 import numpy as np
 
-class Pellet():
+class Pellet(object):
 	def __init__(self, row, column):
 		self.name = PELLET
-		self.position = Vector2(column * TILEWIDTH, row * TILEHEIGHT)
+		self.position = Vector2(column*TILEWIDTH, row*TILEHEIGHT)
 		self.color = WHITE
-		self.radius = int(4 * TILEWIDTH / 16)
-		self.collideRadius = int(4 * TILEWIDTH / 16)
+
+		self.radius = int(2 * TILEWIDTH / 16)
+		self.collideRadius = int(2 * TILEWIDTH / 16)
 		self.points = 10
 		self.visible = True
 
 	def render(self, screen):
 		if self.visible:
-			p = self.position.asInt()
-			pygame.draw.circle(screen, self.color, p, self.radius)
+			adjust = Vector2(TILEWIDTH, TILEHEIGHT) / 2
+			p = self.position + adjust
+			pygame.draw.circle(screen, self.color, p.asInt(), self.radius)
 
 
 class PowerPellet(Pellet):
@@ -26,7 +28,7 @@ class PowerPellet(Pellet):
 		self.radius = int(8 * TILEWIDTH / 16)
 		self.points = 50
 		self.flashTime = 0.2
-		self.timer = 0
+		self.timer= 0
 
 	def update(self, dt):
 		self.timer += dt
@@ -35,7 +37,8 @@ class PowerPellet(Pellet):
 			self.timer = 0
 
 
-class PelletGroup():
+
+class PelletGroup(object):
 	def __init__(self, pelletfile):
 		self.pelletList = []
 		self.powerpellets = []
@@ -50,7 +53,7 @@ class PelletGroup():
 		data = self.readPelletfile(pelletfile)
 		for row in range(data.shape[0]):
 			for col in range(data.shape[1]):
-				if data[row][col] in ['.','+']:
+				if data[row][col] in ['.', '+']:
 					self.pelletList.append(Pellet(row, col))
 				elif data[row][col] in ['P', 'p']:
 					pp = PowerPellet(row, col)
@@ -58,13 +61,13 @@ class PelletGroup():
 					self.powerpellets.append(pp)
 
 	def readPelletfile(self, textfile):
-		return np.loadtxt(textfile, dtype='U1')
+		return np.loadtxt(textfile, dtype='<U1')
 
 	def isEmpty(self):
 		if len(self.pelletList) == 0:
 			return True
 		return False
 
-	def render (self, screen):
+	def render(self, screen):
 		for pellet in self.pelletList:
 			pellet.render(screen)

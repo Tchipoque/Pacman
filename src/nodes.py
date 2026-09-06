@@ -3,17 +3,14 @@ from vector import Vector2
 from constants import *
 import numpy as np
 
-
-class Node():
+class Node(object):
 	def __init__(self, x, y):
 		self.position = Vector2(x, y)
-		self.neighbors = {UP : None, DOWN: None, LEFT: None, RIGHT: None, PORTAL: None}
-		self.access = {
-			UP: [PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT],
-			DOWN: [PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT],
-			LEFT: [PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT],
-			RIGHT: [PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT],
-			}
+		self.neighbors = {UP:None, DOWN:None, LEFT:None, RIGHT:None, PORTAL:None}
+		self.access = {UP:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT],
+					   DOWN:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT],
+					   LEFT:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT],
+					   RIGHT:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT]}
 
 	def denyAccess(self, direction, entity):
 		if entity.name in self.access[direction]:
@@ -22,7 +19,6 @@ class Node():
 	def allowAccess(self, direction, entity):
 		if entity.name not in self.access[direction]:
 			self.access[direction].append(entity.name)
-
 
 	def render(self, screen):
 		for n in self.neighbors.keys():
@@ -33,7 +29,8 @@ class Node():
 				pygame.draw.circle(screen, RED, self.position.asInt(), 12)
 
 
-class NodeGroup():
+
+class NodeGroup(object):
 	def __init__(self, level):
 		self.level = level
 		self.nodesLUT = {}
@@ -45,15 +42,10 @@ class NodeGroup():
 		self.connectVertically(data)
 		self.homekey = None
 
-
-	def render(self, screen):
-		for node in self.nodesLUT.values():
-			node.render(screen)
-
 	def readMazeFile(self, textfile):
 		return np.loadtxt(textfile, dtype='<U1')
 
-	def createNodeTable(self, data, xoffset = 0, yoffset = 0):
+	def createNodeTable(self, data, xoffset=0, yoffset=0):
 		for row in list(range(data.shape[0])):
 			for col in list(range(data.shape[1])):
 				if data[row][col] in self.nodeSymbols:
@@ -63,8 +55,7 @@ class NodeGroup():
 	def constructKey(self, x, y):
 		return x * TILEWIDTH, y * TILEHEIGHT
 
-
-	def connectHorizontally(self, data, xoffset= 0, yoffset=0):
+	def connectHorizontally(self, data, xoffset=0, yoffset=0):
 		for row in list(range(data.shape[0])):
 			key = None
 			for col in list(range(data.shape[1])):
@@ -113,11 +104,9 @@ class NodeGroup():
 	def setPortalPair(self, pair1, pair2):
 		key1 = self.constructKey(*pair1)
 		key2 = self.constructKey(*pair2)
-
 		if key1 in self.nodesLUT.keys() and key2 in self.nodesLUT.keys():
 			self.nodesLUT[key1].neighbors[PORTAL] = self.nodesLUT[key2]
 			self.nodesLUT[key2].neighbors[PORTAL] = self.nodesLUT[key1]
-
 
 	def createHomeNodes(self, xoffset, yoffset):
 		homedata = np.array([['X','X','+','X','X'],
@@ -125,23 +114,24 @@ class NodeGroup():
 							 ['+','X','.','X','+'],
 							 ['+','.','+','.','+'],
 							 ['+','X','X','X','+']])
+
 		self.createNodeTable(homedata, xoffset, yoffset)
 		self.connectHorizontally(homedata, xoffset, yoffset)
 		self.connectVertically(homedata, xoffset, yoffset)
-		self.homekey = self.constructKey(xoffset + 2, yoffset)
+		self.homekey = self.constructKey(xoffset+2, yoffset)
 		return self.homekey
 
-	def connectHomeNodes(self,homekey, otherkey, direction):
+	def connectHomeNodes(self, homekey, otherkey, direction):
 		key = self.constructKey(*otherkey)
 		self.nodesLUT[homekey].neighbors[direction] = self.nodesLUT[key]
-		self.nodesLUT[key].neighbors[direction * -1] = self.nodesLUT[homekey]
+		self.nodesLUT[key].neighbors[direction*-1] = self.nodesLUT[homekey]
 
 	def denyAccess(self, col, row, direction, entity):
 		node = self.getNodeFromTiles(col, row)
 		if node is not None:
 			node.denyAccess(direction, entity)
 
-	def alllowAccess(self, col, row, direction, entity):
+	def allowAccess(self, col, row, direction, entity):
 		node = self.getNodeFromTiles(col, row)
 		if node is not None:
 			node.allowAccess(direction, entity)
@@ -167,3 +157,7 @@ class NodeGroup():
 	def allowHomeAccessList(self, entities):
 		for entity in entities:
 			self.allowHomeAccess(entity)
+
+	def render(self, screen):
+		for node in self.nodesLUT.values():
+			node.render(screen)

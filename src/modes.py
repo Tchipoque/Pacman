@@ -1,6 +1,6 @@
 from constants import *
 
-class MainMode():
+class MainMode(object):
 	def __init__(self):
 		self.timer = 0
 		self.scatter()
@@ -24,7 +24,7 @@ class MainMode():
 		self.timer = 0
 
 
-class ModeController():
+class ModeController(object):
 	def __init__(self, entity):
 		self.timer = 0
 		self.time = None
@@ -42,14 +42,15 @@ class ModeController():
 				self.current = self.mainmode.mode
 		elif self.current in [SCATTER, CHASE]:
 			self.current = self.mainmode.mode
-			if self.current is SPAWN:
-				if self.entity.node == self.entity.spawnNode:
-					self.entity.normalMode()
-					self.current = self.mainmode.mode
 
-	def setSpawnNode(self):
+		if self.current is SPAWN:
+			if self.entity.node == self.entity.spawnNode:
+				self.entity.normalMode()
+				self.current = self.mainmode.mode
+
+	def setSpawnMode(self):
 		if self.current is FREIGHT:
-			self.current = SPAWN
+		   self.current = SPAWN
 
 	def setFreightMode(self):
 		if self.current in [SCATTER, CHASE]:
