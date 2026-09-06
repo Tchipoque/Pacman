@@ -100,7 +100,7 @@ class GameController(object):
 			if not self.pause.paused:
 				self.pacman.update(dt)
 		else:
-			self.pacman.update(dt)
+			self.pacman.update
 		afterPauseMethod = self.pause.update(dt)
 		if afterPauseMethod is not None:
 			afterPauseMethod()
