@@ -50,7 +50,7 @@ class ModeController(object):
 
 	def setSpawnMode(self):
 		if self.current is FREIGHT:
-		   self.current = SPAWN
+			self.current = SPAWN
 
 	def setFreightMode(self):
 		if self.current in [SCATTER, CHASE]:

@@ -100,7 +100,7 @@ class GameController(object):
 			if not self.pause.paused:
 				self.pacman.update(dt)
 		else:
-			self.pacman.update
+			self.pacman.update(dt)
 		afterPauseMethod = self.pause.update(dt)
 		if afterPauseMethod is not None:
 			afterPauseMethod()
@@ -139,16 +139,16 @@ class GameController(object):
 					ghost.startSpawn()
 					self.nodes.allowHomeAccess(ghost)
 				elif ghost.mode.current is not SPAWN:
-					 if self.pacman.alive:
-						 self.lives -=  1
-						 self.lifesprites.removeImage()
-						 self.pacman.die()
-						 self.ghosts.hide()
-						 if self.lives <= 0:
-							 self.textgroup.showText(GAMEOVERTXT)
-							 self.pause.setPause(pauseTime=3, func=self.restartGame)
-						 else:
-							 self.pause.setPause(pauseTime=3, func=self.resetLevel)
+					if self.pacman.alive:
+						self.lives -=  1
+						self.lifesprites.removeImage()
+						self.pacman.die()
+						self.ghosts.hide()
+						if self.lives <= 0:
+							self.textgroup.showText(GAMEOVERTXT)
+							self.pause.setPause(pauseTime=3, func=self.restartGame)
+						else:
+							self.pause.setPause(pauseTime=3, func=self.resetLevel)
 
 	def checkFruitEvents(self):
 		if self.pellets.numEaten == 50 or self.pellets.numEaten == 140:
@@ -173,7 +173,7 @@ class GameController(object):
 				self.ghosts.clyde.startNode.allowAccess(LEFT, self.ghosts.clyde)
 			self.pellets.pelletList.remove(pellet)
 			if pellet.name == POWERPELLET:
-			   self.ghosts.startFreight()
+				self.ghosts.startFreight()
 			if self.pellets.isEmpty():
 				self.hideEntities()
 				self.pause.setPause(pauseTime=3, func=self.nextLevel)
