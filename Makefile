@@ -39,12 +39,12 @@ install:
 # Run your project
 run:
 	$(call msg_step,Running application...)
-	@uv run python3 -m src --functions_definition $(FUNCTIONS) --input $(PROMPTS) --output $(OUTPUT)
+	@uv run python3 src/run.py
 
 # Debug mode
 debug:
 	$(call msg_warn,Starting debugger for maze application...)
-	@python3 -m pdb -m src $(FUNCTIONS) $(PROMPTS) $(OUTPUT)
+	@python3 -m pdb src/run.py
 
 # Clean cache files
 clean:
